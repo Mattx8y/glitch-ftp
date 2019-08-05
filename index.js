@@ -28,7 +28,7 @@ module.exports = {
         let account = options.accounts[i];
         if (account.username === username && account.password === password)
           return resolve({
-            root: projectStorage
+            fs: require("./fs.js")(projectStorage, gitURL)
           });
       };
       reject(new TypeError("Invalid username or password"));

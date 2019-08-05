@@ -38,7 +38,7 @@ module.exports = function(projectStorage, gitURL) {
         else fs.unlinkAsync(fsPath);
         let cwd = process.cwd();
         procss.chdir(projectStorage);
-        await git.commit("Delete " + fileName);
+        await git.commit("Delete " + path);
         await git.push(gitURL, "master");
         process.chdir(cwd);
       });
@@ -47,7 +47,11 @@ module.exports = function(projectStorage, gitURL) {
     rename(from, to) {
       const {fsPath: fromPath} = this._resolvePath(from);
       const {fsPath: toPath} = this._resolvePath(to);
-      return fs.renameAsync(fromPath, toPath);
+      fs.renameAsync(fromPath, toPath
+      let cwd = process.cwd();
+      procss.chdir(projectStorage);
+      git.commit("Rename " + from + " to " + to).then(() => git.push(gitURL, "master"));
+      process.chdir(cwd);
     }
   }
 };
