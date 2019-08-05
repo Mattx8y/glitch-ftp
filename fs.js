@@ -7,11 +7,11 @@ const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const errors = require('ftp-srv/src/errors.js');
 
-const {FTPFileSystem} = require("ftp-srv");
+const {FileSystem} = require('ftp-srv');
 const git = require("simple-git/promise")();
 
 module.exports = function(projectStorage, gitURL) {
-  return class FileSystem extends FTPFileSystem {
+  return class extends FileSystem {
     write(fileName, {append = false, start = undefined} = {}) {
       const {fsPath, clientPath} = this._resolvePath(fileName);
       const stream = fs.createWriteStream(fsPath, {flags: !append ? 'w+' : 'a+', start});
@@ -33,7 +33,7 @@ module.exports = function(projectStorage, gitURL) {
     delete(path) {
       const {fsPath} = this._resolvePath(path);
       return fs.statAsync(fsPath)
-      .then((stat) => {
+      .then(async (stat) => {
         if (stat.isDirectory()) fs.rmdirAsync(fsPath);
         else fs.unlinkAsync(fsPath);
         let cwd = process.cwd();
@@ -47,7 +47,7 @@ module.exports = function(projectStorage, gitURL) {
     rename(from, to) {
       const {fsPath: fromPath} = this._resolvePath(from);
       const {fsPath: toPath} = this._resolvePath(to);
-      fs.renameAsync(fromPath, toPath
+      fs.renameAsync(fromPath, toPath);
       let cwd = process.cwd();
       procss.chdir(projectStorage);
       git.commit("Rename " + from + " to " + to).then(() => git.push(gitURL, "master"));

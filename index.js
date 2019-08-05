@@ -3,36 +3,47 @@ const fs = require("fs");
 const ftp = require("ftp-srv");
 const git = require("simple-git/promise")();
 
+function deleteFolderRecursive(path) {
+  fs.readdirSync(path).forEach(function(file,index) {
+    var curPath = path + "/" + file;
+    if (fs.lstatSync(curPath).isDirectory()) { // recurse
+      deleteFolderRecursive(curPath);
+    } else { // delete file
+      fs.unlinkSync(curPath);
+    };
+  });
+  fs.rmdirSync(path);
+};
+
 module.exports = {
   create: async function create(options = {
-    port: 21,
     accounts: []
   }) {
-    if (typof options.projectName !== "string")
+    if (typeof options.projectName !== "string")
       throw new TypeError("Please specify the project name");
-    if (typof options.gitUsername !== "string")
+    if (typeof options.gitUsername !== "string")
       throw new TypeError("Please specify the git username");
     let gitURL = `https://${options.gitUsername}:@api.glitch.com/git/${options.projectName}`;
     if (!fs.existsSync("./_projectStorage"))
       fs.mkdirSync("./_projectStorage");
-    let projectStorage = `./projectStorage/${options.projectName}`;
-    if (!fs.existsSync(projectStorage))
-      fs.mkdirSync(projectStorage);
+    let projectStorage = `./_projectStorage/${options.projectName}`;
+    if (fs.existsSync(projectStorage)) {
+      deleteFolderRecursive(projectStorage);
+    };
+    fs.mkdirSync(projectStorage);
     await git.clone(gitURL, projectStorage);
-    await git.addRemote(gitURL, projectStorage);
-    let server = new ftp({
-      url: `ftp://0.0.0.0:${options.port}`
-    });
+    let server = new ftp();
     server.on("login", function login({connection, username, password}, resolve, reject) {
       for (let i in options.accounts) {
         let account = options.accounts[i];
         if (account.username === username && account.password === password)
           return resolve({
-            fs: require("./fs.js")(projectStorage, gitURL)
+            fs: require("./fs.js") (projectStorage, gitURL)
           });
       };
-      reject(new TypeError("Invalid username or password"));
+      reject("Invalid username or password");
     });
+    server.listen().then(() => console.log("Your server is online!"));
     return server;
   }
 };
