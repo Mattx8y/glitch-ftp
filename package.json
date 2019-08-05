@@ -1,0 +1,28 @@
+{
+  "name": "glitch-ftp",
+  "description": "FTP server for glitch.com projects",
+  "keywords": [
+    "glitch",
+    "git",
+    "ftp"
+  ],
+  "homepage": "https://github.com/Mattx8y/glitch-ftp#readme",
+  "bugs": {
+    "url": "https://github.com/Mattx8y/glitch-ftp/issues",
+    "email": "wrscr.surpertop@gmail.com"
+  },
+  "license": "MIT",
+  "author": "Mattx8y <wrscr.surpertop@gmail.com> (https://mattx8y.gq)",
+  "contributors": [
+    "Mattx8y <wrscr.surpertop@gmail.com> (https://mattx8y.gq)"
+  ],
+  "main": "index.js",
+  "bin": {
+    "gftp": "./bin/cli.js"
+  },
+  "repository": "github:Mattx8y/glitch-ftp",
+  "dependencies": {
+    "simple-git": "^1.124.0",
+    "ftp-srv": "^4.1.1"
+  }
+}
