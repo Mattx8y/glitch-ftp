@@ -6,7 +6,6 @@ const git = require("simple-git/promise")();
 module.exports = {
   create: async function create(options = {
     port: 21,
-    anonymous: false,
     accounts: []
   }) {
     if (typof options.projectName !== "string")
@@ -22,8 +21,7 @@ module.exports = {
     await git.clone(gitURL, projectStorage);
     await git.addRemote(gitURL, projectStorage);
     let server = new ftp({
-      url: `ftp://0.0.0.0:${options.port}`,
-      anonymous: options.anonymous
+      url: `ftp://0.0.0.0:${options.port}`
     });
     server.on("login", function login({connection, username, password}, resolve, reject) {
       for (let i in options.accounts) {
@@ -34,15 +32,6 @@ module.exports = {
           });
       };
       reject(new TypeError("Invalid username or password"));
-    });
-    server.on("STOR", async function(error, fileName) {
-      if (error)
-        throw error;
-      let cwd = process.cwd();
-      process.chdir(projectStorage);
-      await git.commit("Updated file");
-      await git.push(gitURL);
-      process.chdir(cwd);
     });
     return server;
   }
