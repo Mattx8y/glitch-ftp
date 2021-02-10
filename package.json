@@ -23,7 +23,7 @@
   "repository": "github:Mattx8y/glitch-ftp",
   "dependencies": {
     "bluebird": "^3.5.5",
-    "ftp-srv": "^4.1.1",
+    "ftp-srv": "^4.4.0",
     "lodash": "^4.17.15",
     "simple-git": "^1.124.0",
     "uuid": "^3.3.2"
